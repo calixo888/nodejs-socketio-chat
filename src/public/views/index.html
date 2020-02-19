@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  </head>
+  <style>
+    .v-list-item {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-top: 2px;
+    }
+  </style>
+  <body>
+    <div id="app">
+      <v-app>
+        <v-container>
+          <h1 class="display-2 my-5" align="center">Node.js Chat Application</h1>
+          <v-card>
+            <v-card-title>Node.js Chat Application</v-card-title>
+            <v-card-subtitle>This is a web-based chat system built with Socket.io</v-card-subtitle>
+            <v-card-text>
+              <v-list>
+                <v-list-item dense v-for="(chatItem, i) in chatHistory" :key="i">
+                  <v-list-item-title>{{ chatItem.msg }}</v-list-item-title>
+                  <v-divider :key="i" :inset="chatItem.inset"></v-divider>
+                </v-list-item>
+              </v-list>
+              <form action="" class="chat-form">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-text-field class="mt-5" v-on="on" label="Chat Message" v-model="chatInput" outlined></v-text-field>
+                  </template>
+                  <span>Hit "Enter" to Send</span>
+                </v-tooltip>
+              </form>
+            </v-card-text>
+          </v-card>
+        </v-container>
+      </v-app>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+  <script>
+    var vue = new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      data: {
+        chatInput: "",
+        chatHistory: []
+      }
+    });
+
+    var socket = io();
+
+    var form = document.querySelector(".chat-form");
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+      socket.emit('chat message', vue.$data.chatInput);
+      vue.$data.chatInput = "";
+    });
+
+    socket.on('chat message', function(msg) {
+      vue.$data.chatHistory.push({
+        msg,
+
+      });
+    });
+  </script>
+</html>
